@@ -1,1 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Registration</title>
+<style>
+body {
+background-color: #ffffff;
+font-family: serif;
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100vh;
+margin: 0;
+}
+form {
+background-color: #b4aeae;
+padding: 40px;
+border-radius: 8px;
+box-shadow: 0px 2px 55px rgba(11, 11, 11, 0.4);
+[18/01, 06:38] Akash Borase: width: 405px;
+text-align: center;
+}
+h1 {
+margin-bottom: 20px;
+color: #333333;
+}
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+width: 100%;
+padding: 10px;
+margin-bottom: 15px;
+border: 1px solid #ccc;
+}
+input[type="submit"] {
+background-color: #007bff;
+color: #ffffff;
+padding: 10px;
+width: 100%;
+}
+input[type="submit"]:hover {
+background-color: #0056b3;
+}
+</style>
+</head>
+<body>
+<form action="register.php" method="POST">
+<h1>Registration</h1>
+<label for="username">Username:</label><br>
+<input type="text" name="username" required><br>
+<label for="email">Email:</label><br>
+<input type="email" name="email" required><br>
+<label for="password">Password:</label><br>
+<input type="password" name="password" required><br>
+<input type="submit" value="Register">
+</form>
+</body>
+</html>
+Register.php database schema
 
+<?php
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "atlab1";
+[18/01, 06:39] Akash Borase: $conn = new mysqli($servername, $username, $password, $dbname);
+if ($conn->connect_error) {
+die("Connection failed: " . $conn->connect_error);
+}
+$username = $_POST['username'];
+$email = $_POST['email'];
+$password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+$sql = "INSERT INTO users (username, email, password) VALUES ('$username',
+'$email', '$password')";
+if ($conn->query($sql) === TRUE) {
+echo "Registration successful!";
+} else {
+echo "Error: " . $sql . "<br>" . $conn->error;
+}
+$conn->close();
+?>
+Login.html
+<!DOCTYPE html>
+<html>
+<head>
+<title>Login</title>
+<style>
+/* CSS for the login form container */
+body {
+background-color: rgb(255, 255, 255);
+display: flex;
+font-family: serif;
+text-align: center;
+justify-content: center;
+align-items: center;
+height: 100vh;
+}
+form {
+background-color: rgba(173, 167, 167, 0.8); /* Semi-transparent
+white background */
+width: 400px;
+padding: 40px;
+border-radius: 10px;
+box-shadow: 0px 0px 40px rgba(0, 0, 0, 0.5);
+}
+input[type="text"],
+input[type="password"] {
+[18/01, 06:40] Akash Borase: width: 100%;
+padding: 10px;
+margin: 5px 0;
+border: 1px solid #ccc;
+}
+input[type="submit"] {
+width: 100%;
+padding: 10px;
+margin-top: 10px;
+background-color: #007BFF; /* Blue button background color */
+color: white; /* Text color */
+border: none;
+border-radius: 5px;
+cursor: pointer;
+}
+</style>
+</head>
+<body>
+<form action="login.php" method="POST">
+<h2>Login</h2>
+Username or Email: <input type="text" name="username_email"
+required><br>
+Password: <input type="password" name="password" required><br>
+<input type="submit" value="Login">
+</form>
+</body>
+</html>
+ <?php
+session_start();
+// Establish a database connection
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "atlab1";
+$conn = new mysqli($servername, $username, $password, $dbname);
+if ($conn->connect_error) {
+die("Connection failed: " . $conn->connect_error);
+}
+// Retrieve user input
+$username_email = $_POST['username_email'];
+$password = $_POST['password'];
+[18/01, 06:41] Akash Borase: Check if the user exists
+$sql = "SELECT * FROM users WHERE username='$username_email' OR
+email='$username_email'";
+$result = $conn->query($sql);
+if ($result->num_rows == 1) {
+$row = $result->fetch_assoc();
+// Verify the password
+if (password_verify($password, $row['password'])) {
+$_SESSION['username'] = $row['username'];
+echo "Login successful!";
+// Redirect to a protected page or dashboard
+} else {
+echo "Incorrect password!";
+}
+} else {
+echo "User not found!";
+}
+$conn->close();
+Login.php
+Create table users (
+Is int auto increment primary key
+Username varchar(250) not null,
+Email varchar (250) not null,
+Password varchar (250) not null );
